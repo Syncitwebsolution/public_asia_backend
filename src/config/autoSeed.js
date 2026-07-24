@@ -2,6 +2,7 @@ import { Category } from "../models/category.model.js";
 import { Article } from "../models/article.model.js";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
+import { WebStory } from "../models/webstory.model.js";
 
 const categories = [
   { name: "देश", description: "राष्ट्रीय समाचार" },
@@ -308,6 +309,88 @@ export async function autoSeed() {
       });
     }
     console.log(`🎬 Created ${videosData.length} videos`);
+
+    // Create web stories
+    const webStoriesData = [
+      {
+        title: "IPL 2026: टॉप 5 युवा खिलाड़ी जो इस सीजन मचाएंगे धमाल",
+        categoryName: "क्रिकेट",
+        image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80",
+        slides: [
+          {
+            image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80",
+            title: "IPL 2026 की शुरुआत!",
+            description: "22 मार्च से शुरू हो रहे क्रिकेट के सबसे बड़े महाकुंभ IPL 2026 पर पूरी दुनिया की नजरें हैं।",
+            articleUrl: "https://publicasia.in"
+          },
+          {
+            image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
+            title: "1. यशस्वी जायसवाल",
+            description: "राजस्थान रॉयल्स के इस विस्फोटक ओपनर से इस बार भी आतिशी पारियों की उम्मीद है।",
+            articleUrl: "https://publicasia.in"
+          },
+          {
+            image: "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?w=800&q=80",
+            title: "2. शुभमन गिल",
+            description: "गुजरात टाइटन्स के कप्तान गिल अपनी निरंतरता से ऑरेंज कैप के मजबूत दावेदार हैं।",
+            articleUrl: "https://publicasia.in"
+          }
+        ]
+      },
+      {
+        title: "iPhone 18 Pro: 5 सबसे बड़े AI फीचर्स जो देंगे नया अनुभव",
+        categoryName: "टेक्नोलॉजी",
+        image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=80",
+        slides: [
+          {
+            image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=80",
+            title: "Apple का नया फ्लैगशिप फोन!",
+            description: "Apple ने अपना अब तक का सबसे एडवांस और पावरफुल iPhone 18 Pro पेश किया है।",
+            articleUrl: "https://publicasia.in"
+          },
+          {
+            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
+            title: "A20 Bionic AI चिप",
+            description: "2-नैनोमीटर तकनीक पर आधारित चिपसेट, जो पलक झपकते ही काम निपटाता है।",
+            articleUrl: "https://publicasia.in"
+          }
+        ]
+      },
+      {
+        title: "गर्मियों में तरोताजा रहने के लिए 4 देसी हेल्थ ड्रिंक्स",
+        categoryName: "लाइफस्टाइल",
+        image: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=800&q=80",
+        slides: [
+          {
+            image: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=800&q=80",
+            title: "गर्मी से बचाव के ड्रिंक्स",
+            description: "भीषण गर्मी में डिहाइड्रेशन से बचने के लिए ये देसी शरबत बहुत फायदेमंद हैं।",
+            articleUrl: "https://publicasia.in"
+          },
+          {
+            image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80",
+            title: "1. सत्तू का शरबत",
+            description: "प्रोटीन से भरपूर सत्तू पेट को तुरंत ठंडा रखता है और ऊर्जा से भर देता है।",
+            articleUrl: "https://publicasia.in"
+          }
+        ]
+      }
+    ];
+
+    for (const ws of webStoriesData) {
+      const category = catDocs[ws.categoryName];
+      if (!category) continue;
+      await WebStory.create({
+        title: ws.title,
+        category: category._id,
+        image: ws.image,
+        status: "PUBLISHED",
+        views: Math.floor(Math.random() * 2000) + 300,
+        articleUrl: ws.slides[0]?.articleUrl || "",
+        slides: ws.slides
+      });
+    }
+    console.log(`📸 Created ${webStoriesData.length} multi-slide web stories`);
     console.log("🎉 Seeding complete!");
 
   } catch (err) {

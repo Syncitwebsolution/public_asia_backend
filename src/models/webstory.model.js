@@ -30,6 +30,14 @@ const webStorySchema = new Schema(
       trim: true,
       default: "",
     },
+    slides: [
+      {
+        image: { type: String, required: true },
+        title: { type: String, default: "" },
+        description: { type: String, default: "" },
+        articleUrl: { type: String, default: "" },
+      },
+    ],
   },
   {
     timestamps: true,

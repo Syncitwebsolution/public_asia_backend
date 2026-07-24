@@ -4,46 +4,40 @@ import { autoSeed } from "./autoSeed.js";
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
   try {
-    // Try connecting to primary URI with a 3-second timeout so it fails fast if not running
     console.log(`🔌 Attempting to connect to MongoDB...`);
     const connectionInstance = await mongoose.connect(uri, {
       dbName: "news-db",
       serverSelectionTimeoutMS: 3000,
     });
     console.log(
-      `\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`,
+      `\n✅ MongoDB connected successfully! DB HOST: ${connectionInstance.connection.host}`,
     );
     
     // Auto-seed data on successful connection
     await autoSeed();
   } catch (error) {
-    console.warn("\n⚠️ Local MongoDB connection failed or not running:", error.message);
-    console.log("⚡ Attempting to spin up programmatically managed In-Memory MongoDB server...");
+    console.warn("\n⚠️ Primary MongoDB connection failed or not running:", error.message);
+    console.log("⚡ Attempting In-Memory MongoDB server fallback...");
 
     try {
-      // Dynamically import to avoid load issues if package is not yet fully installed
       const { MongoMemoryServer } = await import("mongodb-memory-server");
-      const mongoServer = await MongoMemoryServer.create({
-        binary: {
-          version: "5.0.26",
-        }
-      });
+      const mongoServer = await MongoMemoryServer.create();
       const inMemoryUri = mongoServer.getUri();
-      console.log(`🚀 In-Memory MongoDB (v5.0.26) started successfully at: ${inMemoryUri}`);
+      console.log(`🚀 In-Memory MongoDB started successfully at: ${inMemoryUri}`);
 
       const connectionInstance = await mongoose.connect(inMemoryUri, {
         dbName: "news-db"
       });
       console.log(
-        `\n MongoDB connected !! DB HOST (In-Memory): ${connectionInstance.connection.host}`,
+        `\n✅ MongoDB connected (In-Memory)! DB HOST: ${connectionInstance.connection.host}`,
       );
 
-      // Seed the in-memory database
       await autoSeed();
     } catch (inMemoryError) {
-      console.error("\n❌ FAILED to start or connect to In-Memory MongoDB server:", inMemoryError.message);
-      console.error("Please ensure MongoDB is running or that 'npm install -D mongodb-memory-server' is completed.");
-      process.exit(1);
+      console.error("\n❌ MongoDB is not currently running on 127.0.0.1:27017 and Windows Application Control blocked the temporary MongoMemoryServer binary.");
+      console.error("\n👉 HOW TO FIX:");
+      console.error(" 1. Start your local MongoDB service / MongoDB Compass on your PC.");
+      console.error(" 2. OR paste your MongoDB Atlas Cloud URI into Backend/.env (e.g. MONGODB_URI=mongodb+srv://...)\n");
     }
   }
 };

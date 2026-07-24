@@ -5,3 +5,5 @@ public/temp/*
 .env.example
 
 config.bat
+bin/
+.env
