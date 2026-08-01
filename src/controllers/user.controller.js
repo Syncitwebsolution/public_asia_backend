@@ -49,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!avatar) {
       throw new ApiError(400, "Avatar file upload failed");
     }
-    avatarUrl = avatar.url;
+    avatarUrl = avatar.secure_url || avatar.url;
   }
 
   // Pre-save hook will automatically hash the password

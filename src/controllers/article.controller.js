@@ -25,7 +25,7 @@ const createArticle = asyncHandler(async (req, res) => {
   if (thumbnailLocalPath) {
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
     if (thumbnail) {
-      thumbnailUrl = thumbnail.url;
+      thumbnailUrl = thumbnail.secure_url || thumbnail.url;
     } else {
       console.warn("Cloudinary upload failed, saving article without thumbnail");
     }
@@ -209,7 +209,7 @@ const updateArticle = asyncHandler(async (req, res) => {
   const thumbnailLocalPath = req.file?.path;
   if (thumbnailLocalPath) {
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
-    if (thumbnail) article.thumbnail = thumbnail.url;
+    if (thumbnail) article.thumbnail = thumbnail.secure_url || thumbnail.url;
   }
 
   await article.save();

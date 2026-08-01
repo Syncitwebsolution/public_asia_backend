@@ -29,7 +29,7 @@ const createWebStory = asyncHandler(async (req, res) => {
   let coverImageUrl = "";
   if (coverImageFile?.path) {
     const uploaded = await uploadOnCloudinary(coverImageFile.path);
-    if (uploaded) coverImageUrl = uploaded.url;
+    if (uploaded) coverImageUrl = uploaded.secure_url || uploaded.url;
   }
 
   let parsedSlides = parseSlidesJSON(slidesRaw);
@@ -42,9 +42,9 @@ const createWebStory = asyncHandler(async (req, res) => {
       const uploaded = await uploadOnCloudinary(file.path);
       if (uploaded) {
         if (!parsedSlides[i]) {
-          parsedSlides[i] = { image: uploaded.url };
+          parsedSlides[i] = { image: uploaded.secure_url || uploaded.url };
         } else {
-          parsedSlides[i].image = uploaded.url;
+          parsedSlides[i].image = uploaded.secure_url || uploaded.url;
         }
       }
     }
@@ -150,7 +150,7 @@ const updateWebStory = asyncHandler(async (req, res) => {
   const coverImageFile = req.files?.image?.[0] || req.file;
   if (coverImageFile?.path) {
     const uploaded = await uploadOnCloudinary(coverImageFile.path);
-    if (uploaded) story.image = uploaded.url;
+    if (uploaded) story.image = uploaded.secure_url || uploaded.url;
   }
 
   if (slidesRaw) {
@@ -162,9 +162,9 @@ const updateWebStory = asyncHandler(async (req, res) => {
         const uploaded = await uploadOnCloudinary(file.path);
         if (uploaded) {
           if (!parsedSlides[i]) {
-            parsedSlides[i] = { image: uploaded.url };
+            parsedSlides[i] = { image: uploaded.secure_url || uploaded.url };
           } else {
-            parsedSlides[i].image = uploaded.url;
+            parsedSlides[i].image = uploaded.secure_url || uploaded.url;
           }
         }
       }

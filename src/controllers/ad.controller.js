@@ -23,7 +23,7 @@ const createAd = asyncHandler(async (req, res) => {
     }
     const uploadedImage = await uploadOnCloudinary(imageLocalPath);
     if (!uploadedImage) throw new ApiError(400, "Image upload failed");
-    finalImageUrl = uploadedImage.url;
+    finalImageUrl = uploadedImage.secure_url || uploadedImage.url;
   }
 
   const ad = await Ad.create({
@@ -101,7 +101,7 @@ const updateAd = asyncHandler(async (req, res) => {
     const imageLocalPath = req.file?.path;
     if (imageLocalPath) {
       const uploadedImage = await uploadOnCloudinary(imageLocalPath);
-      if (uploadedImage) ad.imageUrl = uploadedImage.url;
+      if (uploadedImage) ad.imageUrl = uploadedImage.secure_url || uploadedImage.url;
     }
   }
 

@@ -31,7 +31,7 @@ const createEPaper = asyncHandler(async (req, res) => {
     title,
     date: new Date(date),
     status: status || "DRAFT",
-    thumbnail: uploaded.url,
+    thumbnail: uploaded.secure_url || uploaded.url,
     pages: [] // Pages will be added via separate endpoint or update
   });
 
@@ -93,7 +93,7 @@ const addEPaperPages = asyncHandler(async (req, res) => {
   results.forEach((uploaded, index) => {
     if (uploaded) {
       epaper.pages.push({
-        imageUrl: uploaded.url,
+        imageUrl: uploaded.secure_url || uploaded.url,
         pageNumber: epaper.pages.length + 1
       });
     }

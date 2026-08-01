@@ -27,7 +27,7 @@ const createVideo = asyncHandler(async (req, res) => {
   if (thumbnailLocalPath) {
     const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
     if (!uploaded) throw new ApiError(400, "Thumbnail upload failed");
-    thumbnailUrl = uploaded.url;
+    thumbnailUrl = uploaded.secure_url || uploaded.url;
   } else {
     // Try expanding from youtube
     const ytId = getYoutubeVideoId(videoUrl);
@@ -144,7 +144,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   const thumbnailLocalPath = req.file?.path;
   if (thumbnailLocalPath) {
     const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
-    if (uploaded) video.thumbnail = uploaded.url;
+    if (uploaded) video.thumbnail = uploaded.secure_url || uploaded.url;
   }
 
   await video.save();
