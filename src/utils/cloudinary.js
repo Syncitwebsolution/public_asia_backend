@@ -15,6 +15,8 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto",
       type: "upload",
       access_mode: "public",
+      quality: "auto",
+      fetch_format: "auto",
     });
     // file has been uploaded successfully
     try {
