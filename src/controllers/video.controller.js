@@ -3,7 +3,7 @@ import { Category } from "../models/category.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnImageKit } from "../utils/imagekit.js";
 import mongoose from "mongoose";
 
 // Utility: Extract YouTube Video ID
@@ -25,9 +25,9 @@ const createVideo = asyncHandler(async (req, res) => {
   const thumbnailLocalPath = req.file?.path;
 
   if (thumbnailLocalPath) {
-    const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
+    const uploaded = await uploadOnImageKit(thumbnailLocalPath);
     if (!uploaded) throw new ApiError(400, "Thumbnail upload failed");
-    thumbnailUrl = uploaded.secure_url || uploaded.url;
+    thumbnailUrl = uploaded.url;
   } else {
     // Try expanding from youtube
     const ytId = getYoutubeVideoId(videoUrl);
@@ -143,8 +143,8 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   const thumbnailLocalPath = req.file?.path;
   if (thumbnailLocalPath) {
-    const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
-    if (uploaded) video.thumbnail = uploaded.secure_url || uploaded.url;
+    const uploaded = await uploadOnImageKit(thumbnailLocalPath);
+    if (uploaded) video.thumbnail = uploaded.url;
   }
 
   await video.save();

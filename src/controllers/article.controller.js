@@ -4,7 +4,7 @@ import { Category } from "../models/category.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnImageKit } from "../utils/imagekit.js";
 import mongoose from "mongoose";
 
 // Utility: Generate SEO-friendly slug from title
@@ -23,11 +23,11 @@ const createArticle = asyncHandler(async (req, res) => {
 
   const thumbnailLocalPath = req.file?.path;
   if (thumbnailLocalPath) {
-    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    const thumbnail = await uploadOnImageKit(thumbnailLocalPath);
     if (thumbnail) {
-      thumbnailUrl = thumbnail.secure_url || thumbnail.url;
+      thumbnailUrl = thumbnail.url;
     } else {
-      console.warn("Cloudinary upload failed, saving article without thumbnail");
+      console.warn("ImageKit upload failed, saving article without thumbnail");
     }
   }
 
@@ -208,8 +208,8 @@ const updateArticle = asyncHandler(async (req, res) => {
   // Handle new thumbnail if uploaded
   const thumbnailLocalPath = req.file?.path;
   if (thumbnailLocalPath) {
-    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
-    if (thumbnail) article.thumbnail = thumbnail.secure_url || thumbnail.url;
+    const thumbnail = await uploadOnImageKit(thumbnailLocalPath);
+    if (thumbnail) article.thumbnail = thumbnail.url;
   }
 
   await article.save();

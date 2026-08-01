@@ -2,7 +2,7 @@ import { Ad } from "../models/ad.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnImageKit } from "../utils/imagekit.js";
 import mongoose from "mongoose";
 
 const createAd = asyncHandler(async (req, res) => {
@@ -21,9 +21,9 @@ const createAd = asyncHandler(async (req, res) => {
     if (!imageLocalPath) {
       throw new ApiError(400, "Ad image is required for banner ads");
     }
-    const uploadedImage = await uploadOnCloudinary(imageLocalPath);
+    const uploadedImage = await uploadOnImageKit(imageLocalPath);
     if (!uploadedImage) throw new ApiError(400, "Image upload failed");
-    finalImageUrl = uploadedImage.secure_url || uploadedImage.url;
+    finalImageUrl = uploadedImage.url;
   }
 
   const ad = await Ad.create({
@@ -100,8 +100,8 @@ const updateAd = asyncHandler(async (req, res) => {
     
     const imageLocalPath = req.file?.path;
     if (imageLocalPath) {
-      const uploadedImage = await uploadOnCloudinary(imageLocalPath);
-      if (uploadedImage) ad.imageUrl = uploadedImage.secure_url || uploadedImage.url;
+      const uploadedImage = await uploadOnImageKit(imageLocalPath);
+      if (uploadedImage) ad.imageUrl = uploadedImage.url;
     }
   }
 

@@ -2,7 +2,7 @@ import { EPaper } from "../models/epaper.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnImageKit } from "../utils/imagekit.js";
 import mongoose from "mongoose";
 
 // ==================== CREATE EPAPER ====================
@@ -24,14 +24,14 @@ const createEPaper = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Thumbnail image is required");
   }
 
-  const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
+  const uploaded = await uploadOnImageKit(thumbnailLocalPath);
   if (!uploaded) throw new ApiError(400, "Thumbnail upload failed");
 
   const epaper = await EPaper.create({
     title,
     date: new Date(date),
     status: status || "DRAFT",
-    thumbnail: uploaded.secure_url || uploaded.url,
+    thumbnail: uploaded.url,
     pages: [] // Pages will be added via separate endpoint or update
   });
 
@@ -87,13 +87,13 @@ const addEPaperPages = asyncHandler(async (req, res) => {
   const epaper = await EPaper.findById(id);
   if (!epaper) throw new ApiError(404, "EPaper not found");
 
-  const uploadPromises = files.map(file => uploadOnCloudinary(file.path));
+  const uploadPromises = files.map(file => uploadOnImageKit(file.path));
   const results = await Promise.all(uploadPromises);
 
   results.forEach((uploaded, index) => {
     if (uploaded) {
       epaper.pages.push({
-        imageUrl: uploaded.secure_url || uploaded.url,
+        imageUrl: uploaded.url,
         pageNumber: epaper.pages.length + 1
       });
     }

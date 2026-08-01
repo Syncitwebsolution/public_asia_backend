@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnImageKit } from "../utils/imagekit.js";
 import jwt from "jsonwebtoken";
 
 // Helper: Generate Access and Refresh Tokens
@@ -45,11 +45,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
   let avatarUrl = "";
   if (avatarLocalPath) {
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const avatar = await uploadOnImageKit(avatarLocalPath);
     if (!avatar) {
       throw new ApiError(400, "Avatar file upload failed");
     }
-    avatarUrl = avatar.secure_url || avatar.url;
+    avatarUrl = avatar.url;
   }
 
   // Pre-save hook will automatically hash the password
