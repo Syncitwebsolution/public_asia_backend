@@ -27,11 +27,15 @@ const ePaperSchema = new Schema(
       type: String,
       required: true,
     },
+    pdfUrl: {
+      type: String,
+      default: "",
+    },
     pages: [ePaperPageSchema],
     status: {
       type: String,
       enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
-      default: "DRAFT",
+      default: "PUBLISHED",
     },
   },
   {
@@ -40,3 +44,4 @@ const ePaperSchema = new Schema(
 );
 
 export const EPaper = mongoose.model("EPaper", ePaperSchema);
+
